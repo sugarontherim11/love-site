@@ -17,8 +17,6 @@ html, body{
     font-family:-apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ===== IPHONE 13 ===== */
-
 .screen{
     width:390px;
     height:844px;
@@ -28,19 +26,44 @@ html, body{
     color:white;
 }
 
-/* ===== ВИДЕО ===== */
-
+/* Видео */
 video{
     position:absolute;
     bottom:-60px;
     width:100%;
+    object-fit:cover;
 }
 
-/* ===== ВЕРХНИЙ БЛОК ===== */
+/* Кнопка назад (вверху) */
+.back-btn{
+    position:absolute;
+    top:40px;
+    left:20px;
+    width:28px;
+    height:28px;
+    opacity:0.85;
+    z-index:10;
+    transition:opacity 0.3s ease, transform 0.2s ease;
+}
 
+.back-btn svg{
+    width:100%;
+    height:100%;
+    fill:white;
+}
+
+.back-btn:hover{
+    opacity:1;
+}
+
+.back-btn:active{
+    transform:scale(0.9);
+}
+
+/* Верх */
 .top{
     text-align:center;
-    margin-top:40px;
+    margin-top:60px;
     position:relative;
     z-index:2;
 }
@@ -63,8 +86,7 @@ video{
     font-size:14px;
 }
 
-/* ===== PLAY КНОПКА ===== */
-
+/* Play */
 .play-btn{
     margin:18px auto 0;
     width:44px;
@@ -83,8 +105,7 @@ video{
     fill:black;
 }
 
-/* ===== ПРОГРЕСС ===== */
-
+/* Progress */
 .progress{
     width:70%;
     height:2px;
@@ -98,38 +119,19 @@ video{
     width:0%;
 }
 
-/* ===== МИНИМАЛИСТИЧНАЯ СТРЕЛКА НАЗАД ===== */
-
-.back-btn{
-    position:absolute;
-    bottom:30px;
-    left:20px;
-    width:26px;
-    height:26px;
-    opacity:0.8;
-    transition:opacity 0.3s ease, transform 0.2s ease;
-}
-
-.back-btn svg{
-    width:100%;
-    height:100%;
-    fill:white;
-}
-
-.back-btn:hover{
-    opacity:1;
-}
-
-.back-btn:active{
-    transform:scale(0.9);
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="screen">
+
+    <!-- Назад -->
+    <a href="choose.html" class="back-btn">
+        <svg viewBox="0 0 24 24">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+    </a>
 
     <div class="top">
         <img src="cover.jpg" class="cover">
@@ -147,16 +149,10 @@ video{
         </div>
     </div>
 
-    <video id="roseVideo" preload="auto" playsinline>
+    <!-- Видео -->
+    <video id="roseVideo" preload="auto" playsinline muted poster="cover.jpg">
         <source src="rose.mp4" type="video/mp4">
     </video>
-
-    <!-- Стрелка назад -->
-    <a href="choose.html" class="back-btn">
-        <svg viewBox="0 0 24 24">
-            <path d="M15 18l-6-6 6-6"/>
-        </svg>
-    </a>
 
 </div>
 
@@ -173,19 +169,19 @@ const iconPath = document.getElementById("iconPath");
 let isPlaying = false;
 let finished = false;
 
-/* Первый стоп-кадр */
+/* Первый стоп-кадр для iPhone */
+video.load();
+video.currentTime = 0.01;
 video.pause();
-video.currentTime = 0;
-video.muted = true;
-video.loop = false;
 
+/* Play / Pause */
 btn.addEventListener("click", () => {
 
     if(!isPlaying){
 
         if(finished){
             audio.currentTime = 0;
-            video.currentTime = 0;
+            video.currentTime = 0.01;
             progressBar.style.width = "0%";
             finished = false;
         }
@@ -206,16 +202,20 @@ btn.addEventListener("click", () => {
     }
 });
 
+/* Синхронизация */
 audio.addEventListener("timeupdate", () => {
 
-    const percent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = percent + "%";
+    if(audio.duration){
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = percent + "%";
+    }
 
     if(Math.abs(video.currentTime - audio.currentTime) > 0.3){
         video.currentTime = audio.currentTime;
     }
 });
 
+/* Конец */
 audio.addEventListener("ended", () => {
 
     video.pause();
@@ -231,3 +231,4 @@ audio.addEventListener("ended", () => {
 
 </body>
 </html>
+
